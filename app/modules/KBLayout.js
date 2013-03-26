@@ -10,15 +10,17 @@ function(app) {
   KBLayout.Model = Backbone.Model.extend({
     defaults: function() {
       return {
-        width:1
-        height:1
-        legend:"?"
+        x:0,
+        y:0,
+        width:50,
+        height:50,
+        legend:"?",
       };
     }
   });
 
   KBLayout.Collection = Backbone.Collection.extend({
-    model: Commit.Model,
+    model: KBLayout.Model,
 
   // cache: true,
 
@@ -58,8 +60,53 @@ function(app) {
   //   }
   // });
   KBLayout.Views.preview = Backbone.View.extend({
-    
+    tagName: "canvas",
+
+    initialize: function(data) {
+      _.bindAll(this,"addKey");
+      this.kb = data.kb;
+    },
+
+    serialize: function() {
+      //stuff to go to template in this case nothing
+      return {}
+    },
+    afterRender: function() {
+      //we have
+      console.log("h1");
+      this.ctx = this.el.getContext("2d");
+      this.kb.each(this.addKey);
+    },
+    addKey: function(keyModel) {
+      console.log(keyModel)
+      console.log(this.el)
+      console.log(this.ctx)
+      //renderKey(key, x, y, w, h, round) {
+      this.ctx.beginPath();
+      this.ctx.lineWidth = 1;
+      this.ctx.fillStyle = 'rgb(200, 200, 200)';
+      this.ctx.roundRect(keyModel.get('x'), keyModel.get('y'), keyModel.get('width'), keyModel.get('height'), 5);
+      this.ctx.fill();
+
+      this.ctx.lineWidth = 2;
+      this.ctx.strokeStyle = 'rgb(0, 0, 0)';
+      this.ctx.roundRect(keyModel.get('x'), keyModel.get('y'), keyModel.get('width'), keyModel.get('height'), 5);
+      this.ctx.fill();
+      this.ctx.stroke();
+      this.ctx.closePath();
+      //     _ctx.lineWidth = 0.5;
+      //     _ctx.fillStyle = 'rgb(240, 240, 240)';
+      //     _ctx.fillRoundRect(x + _3d_offset, y + _3d_offset, w - _3d_offset * 2, h - _3d_offset * 2, round);
+
+    },
+
+
+    beforeRender: function() {
+      
+    },
+
   });
+
   // Commit.Views.List = Backbone.View.extend({
   //   tagName: "table",
 
