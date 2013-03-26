@@ -1,9 +1,10 @@
 define([
   // Application.
-  "app"
+  "app",
+  "modules/Renderer"
 ],
 
-function(app) {
+function(app,Renderer) {
 
   var KBLayout = app.module();
 
@@ -15,6 +16,8 @@ function(app) {
         width:50,
         height:50,
         legend:"?",
+        font:"Tahoma",
+        legend_size:12,
       };
     }
   });
@@ -81,23 +84,7 @@ function(app) {
       console.log(keyModel)
       console.log(this.el)
       console.log(this.ctx)
-      //renderKey(key, x, y, w, h, round) {
-      this.ctx.beginPath();
-      this.ctx.lineWidth = 1;
-      this.ctx.fillStyle = 'rgb(200, 200, 200)';
-      this.ctx.roundRect(keyModel.get('x'), keyModel.get('y'), keyModel.get('width'), keyModel.get('height'), 5);
-      this.ctx.fill();
-
-      this.ctx.lineWidth = 2;
-      this.ctx.strokeStyle = 'rgb(0, 0, 0)';
-      this.ctx.roundRect(keyModel.get('x'), keyModel.get('y'), keyModel.get('width'), keyModel.get('height'), 5);
-      this.ctx.fill();
-      this.ctx.stroke();
-      this.ctx.closePath();
-      //     _ctx.lineWidth = 0.5;
-      //     _ctx.fillStyle = 'rgb(240, 240, 240)';
-      //     _ctx.fillRoundRect(x + _3d_offset, y + _3d_offset, w - _3d_offset * 2, h - _3d_offset * 2, round);
-
+      Renderer.renderKey(this.ctx,keyModel)
     },
 
 
