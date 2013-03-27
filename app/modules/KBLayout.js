@@ -9,17 +9,29 @@ function(app,Renderer) {
   var KBLayout = app.module();
 
   KBLayout.Model = Backbone.Model.extend({
+    UNITSCALE: 60,
+  
     defaults: function() {
       return {
         x:0,
         y:0,
-        width:50,
-        height:50,
-        legend:"?",
+        width:this.UNITSCALE,
+        height:this.UNITSCALE,
+        legend:"UNDEF",
         font:"Tahoma",
         legend_size:12,
       };
-    }
+    },
+    parse: function(data){
+      data.width = Math.round(data.unitWidth * this.UNITSCALE);
+      data.height = Math.round(data.unitHeight * this.UNITSCALE);
+      console.log(data.width)
+      data.y = (data.row*this.UNITSCALE)+data.row
+      return data
+    },
+    nextX: function(){
+      return this.get('x')+this.get('width')
+    },
   });
 
   KBLayout.Collection = Backbone.Collection.extend({
@@ -64,6 +76,7 @@ function(app,Renderer) {
   // });
   KBLayout.Views.preview = Backbone.View.extend({
     tagName: "canvas",
+    className: "preview",
 
     initialize: function(data) {
       _.bindAll(this,"addKey");
@@ -75,15 +88,14 @@ function(app,Renderer) {
       return {}
     },
     afterRender: function() {
-      //we have
-      console.log("h1");
+      //work out what to set this to based on parsed result?
+      this.el.setAttribute('width', 1280);
+      this.el.setAttribute('height', 500); 
       this.ctx = this.el.getContext("2d");
+      this.ctx.scale(1,1)
       this.kb.each(this.addKey);
     },
     addKey: function(keyModel) {
-      console.log(keyModel)
-      console.log(this.el)
-      console.log(this.ctx)
       Renderer.renderKey(this.ctx,keyModel)
     },
 

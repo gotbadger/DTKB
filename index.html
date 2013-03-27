@@ -5,7 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="viewport" content="width=device-width,initial-scale=1">
 
-  <title>Backbone Boilerplate</title>
+  <title>Keyboard Layout</title>
 
   <!-- Application styles. -->
 
@@ -30,75 +30,7 @@
   <!-- Application source. -->
 
   <!--(if target dummy)><!-->
-    <script type="text/javascript">
-  CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
-    if (!x && !y && w < 0 || h < 0 || r < 0) {
-        return;
-    }
-    if (w < 2 * r) r = w / 2;
-    if (h < 2 * r) r = h / 2;
-    this.beginPath();
-    this.moveTo(x+r, y);
-    this.arcTo(x+w, y,   x+w, y+h, r);
-    this.arcTo(x+w, y+h, x,   y+h, r);
-    this.arcTo(x,   y+h, x,   y,   r);
-    this.arcTo(x,   y,   x+w, y,   r);
-    this.closePath();
-};
 
-CanvasRenderingContext2D.prototype.fillRoundRect = function(x, y, w, h, r) {
-    this.roundRect(x, y, w, h, r);
-    this.fill();
-};
-
-CanvasRenderingContext2D.prototype.strokeRoundRect = function(x, y, w, h, r) {
-    this.roundRect(x, y, w, h, r);
-    this.stroke();
-};
-
-CanvasRenderingContext2D.prototype.getTextWidth = function (text, font, fontSize) {
-    var width;
-    if (font && fontSize) {
-        var origFont = this.font;
-        this.setFont(font, fontSize);
-        width = this.measureText(text).width;
-        this.font = origFont;
-    } else {    
-        width = this.measureText(text).width;
-    }
-    return width;
-};
-
-CanvasRenderingContext2D.prototype.setFont = function(font, fontSize) {
-    this.font = fontSize + 'pt ' + font;
-};
-
-CanvasRenderingContext2D.prototype.fillTextLine = function(text, x, y, w, h, font, fontSize) {
-    // find fitting font size
-    while (this.getTextWidth(text, font, fontSize) > w && fontSize > 7) {
-        fontSize--;
-    }
-
-    var chars = text.length;
-    var shortText = text;
-    while (this.getTextWidth(shortText, font, fontSize) > w && chars > 0 ) {
-        shortText = text.shorten(--chars);
-    }
-
-    this.setFont(font, fontSize);
-    this.fillText(shortText, x, y, w);
-};
-
-CanvasRenderingContext2D.prototype.fillTextRect = function (text, x, y, w, h, font, fontSize, lineHeight) {
-    var words = text.split(' ');
-
-    // check if text fits into one line
-    if (words.length == 1 || this.getTextWidth(text, font, fontSize) <= w) {
-        this.fillTextLine(text, x, y, w, h, font, fontSize);
-        return;
-    }
-};
-    </script>
   <script data-main="/app/config" src="/vendor/js/libs/require.js"></script>
 
   <!--<!(endif)-->
