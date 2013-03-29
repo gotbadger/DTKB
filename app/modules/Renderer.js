@@ -5,7 +5,7 @@ define([
 // Map dependencies from above array.
 function() {
   var CURVYNESS = 5;
-  var INNER_OFFSET = 3
+  var INNER_OFFSET = 5
   //setup export
   var Renderer = {};
 

@@ -13,18 +13,18 @@ function(KBLayout) {
     console.log(source);
 
     //parse then flatten and remove any errors
-    flat = _filterFailed(_.flatten(_parseRow(source)))
-
+    var flat = _filterFailed(_.flatten(_parseRow(source)))
+    
     _.each(flat,function(elm,index,all){
       //work out how to space things out in here
+      //terible algorithm...
       if(index != 0){
-        var prev = all[index-1];
-        //if they aint on the same row dont do this...
-        if(elm.get('row') ==prev.get('row')){
-          elm.set('x',prev.nextX());
+        for (var i=0;i<index;i++){
+          elm.shuffle(_.toArray(all)[i]);
         }
       }
     })
+
     console.log(flat);
 
    

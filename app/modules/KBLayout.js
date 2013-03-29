@@ -25,13 +25,37 @@ function(app,Renderer) {
     parse: function(data){
       data.width = Math.round(data.unitWidth * this.UNITSCALE);
       data.height = Math.round(data.unitHeight * this.UNITSCALE);
-      console.log(data.width)
       data.y = (data.row*this.UNITSCALE)+data.row
       return data
     },
-    nextX: function(){
-      return this.get('x')+this.get('width')
+    pointNW: function(){
+      return {x:this.get('x'),y:this.get('y')}
     },
+    pointSE: function(){
+      return {x:this.get('x')+this.get('width'),y:this.get('y')+this.get('height')}
+    },
+
+    shuffle: function(intruder){
+      console.log("check " +this.get("legend")+ " against " +intruder.get("legend"))
+      // we positon left to right so check my top right with intruder bottom left
+
+      intruderPoint = 
+      myPointTL = {x:this.get('x'),y:this.get('y')}
+      myPointTR = {x:this.get('x')+this.get("width"),y:this.get('y')}
+
+      // console.log(myPoint)
+      // console.log(intruderPoint)
+      // console.log()
+      // console.log(intruder.pointSE().x + " > " +  this.pointNW().x)
+      if((intruder.pointSE().x > this.pointNW().x) && (this.pointSE().x >= intruder.pointNW().x)){
+        console.log("here")
+        if(intruder.pointSE().y > this.pointNW().y){
+          this.set('x',intruder.pointSE().x);
+        }
+      }
+
+    },
+
   });
 
   KBLayout.Collection = Backbone.Collection.extend({
