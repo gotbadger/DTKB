@@ -26,6 +26,48 @@ function() {
       this.arcTo(x,   y,   x+w, y,   r);
       this.closePath();
   };
+  CTXHelpers.roundLshape = function(x, y, w, bw, h, r, io) {
+      if (!x && !y && w < 0 || h < 0 || r < 0) {
+          return;
+      }
+      //lshape diffrence
+      var ld = w-bw
+      //inner offset for drawing lshapes
+      if(io == undefined){
+        io = 0
+      }else{
+        //if bottom is bigger than top add otherwise subtract
+        if(bw<w){
+          io = 0-io
+        }
+      }
+
+      //half height
+      var hh = h/2;
+      if (w < 2 * r) r = w / 2;
+      if (h < 2 * r) r = h / 2;
+      this.beginPath();
+      this.moveTo(x+r, y);
+      this.arcTo(x+w,  y,   x+w, y+hh, r);
+      this.arcTo(x+w,  y+h, x,   y+h, r);
+      this.arcTo(x+ld, y+h, x+ld,   y,   r);
+      
+      this.arcTo(x+ld,  y+hh+io, x,   y+hh, r);
+
+      this.arcTo(x,   y+hh+io, x,   y,   r);
+
+      this.arcTo(x,   y,    x+w, y,   r); //last conter
+      this.closePath();
+  };
+  CTXHelpers.fillRoundLshape = function(x, y, w, bw, h, r) {
+      this.roundLshape(x, y, w,bw, h, r, INNER_OFFSET);
+      this.fill();
+  };
+
+  CTXHelpers.strokeRoundLshape = function(x, y, w, bw, h, r) {
+      this.roundLshape(x, y, w,bw, h, r);
+      this.stroke();
+  };  
 
   CTXHelpers.fillRoundRect = function(x, y, w, h, r) {
       this.roundRect(x, y, w, h, r);
@@ -80,31 +122,54 @@ function() {
       }
   };
   //
-
+  Renderer.renderLshapeKey = function(context,keyModel){
+    console.log("h");
+  }
   Renderer.renderKey = function(context,keyModel){
+    if(keyModel.get('legend') == ""){
+      return;
+    }
+    var isLshape = keyModel.get('widthBottom') != undefined;
     //decorate context with helpers
     ctx = _.extend(context,CTXHelpers)
-
     ctx.beginPath();
     ctx.lineWidth = 1;
     ctx.fillStyle = 'rgb(200, 200, 200)';
-    ctx.roundRect(keyModel.get('x'), keyModel.get('y'), keyModel.get('width'), keyModel.get('height'), CURVYNESS);
+    if(isLshape){
+      ctx.roundLshape(keyModel.get('x'), keyModel.get('y'), keyModel.get('width'), keyModel.get('widthBottom'), keyModel.get('height'), CURVYNESS);
+    }else{
+       ctx.roundRect(keyModel.get('x'), keyModel.get('y'), keyModel.get('width'), keyModel.get('height'), CURVYNESS);
+    }
+   
     ctx.fill();
 
     ctx.lineWidth = 2;
     ctx.strokeStyle = 'rgb(0, 0, 0)';
-    ctx.roundRect(keyModel.get('x'), keyModel.get('y'), keyModel.get('width'), keyModel.get('height'), CURVYNESS);
+    if(isLshape){
+       ctx.roundLshape(keyModel.get('x'), keyModel.get('y'), keyModel.get('width'), keyModel.get('widthBottom'), keyModel.get('height'), CURVYNESS);
+    }else{
+      ctx.roundRect(keyModel.get('x'), keyModel.get('y'), keyModel.get('width'), keyModel.get('height'), CURVYNESS);
+    }
     ctx.fill();
     ctx.stroke();
 
     ctx.lineWidth = 0.5;
     ctx.fillStyle = 'rgb(240, 240, 240)';
-    ctx.fillRoundRect(keyModel.get('x') + INNER_OFFSET,
-                      keyModel.get('y') + INNER_OFFSET,
-                      keyModel.get('width') - INNER_OFFSET * 2,
-                      keyModel.get('height') - INNER_OFFSET * 2,
-                      CURVYNESS);
-
+    if(isLshape){
+      ctx.fillRoundLshape(
+                  keyModel.get('x') + INNER_OFFSET,
+                  keyModel.get('y') + INNER_OFFSET,
+                  keyModel.get('width') - INNER_OFFSET * 2,
+                  keyModel.get('widthBottom') - INNER_OFFSET *2 ,
+                  keyModel.get('height') - INNER_OFFSET * 2,
+                  CURVYNESS); 
+    }else{
+      ctx.fillRoundRect(keyModel.get('x') + INNER_OFFSET,
+                  keyModel.get('y') + INNER_OFFSET,
+                  keyModel.get('width') - INNER_OFFSET * 2,
+                  keyModel.get('height') - INNER_OFFSET * 2,
+                  CURVYNESS); 
+    }
     ctx.closePath();
     ctx.fillStyle = 'black';
     ctx.textBaseline = 'top';
@@ -113,6 +178,16 @@ function() {
       keyModel.get('legend'),
       keyModel.get('x')+ (INNER_OFFSET*2),
       keyModel.get('y')+ INNER_OFFSET,
+      keyModel.get('width'), 
+      keyModel.get('height'), 
+      keyModel.get('font'), 
+      keyModel.get('legend_size')
+      );
+    ctx.fillStyle = 'blue';
+    ctx.fillTextRect(
+      keyModel.get('sublegend'),
+      keyModel.get('x')+ (INNER_OFFSET*2),
+      keyModel.get('y')+ (INNER_OFFSET*5),
       keyModel.get('width'), 
       keyModel.get('height'), 
       keyModel.get('font'), 

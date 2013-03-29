@@ -18,14 +18,22 @@ function(app,Renderer) {
         width:this.UNITSCALE,
         height:this.UNITSCALE,
         legend:"UNDEF",
+        sublegend: "",
         font:"Tahoma",
         legend_size:12,
+        widthBottom: undefined
       };
     },
     parse: function(data){
       data.width = Math.round(data.unitWidth * this.UNITSCALE);
       data.height = Math.round(data.unitHeight * this.UNITSCALE);
+      if(data.isoStep){
+        data.widthBottom = Math.round(data.isoStep * this.UNITSCALE);
+      }
       data.y = (data.row*this.UNITSCALE)
+      if(data.sublegend == undefined){
+        data.sublegend = ""
+      }
       return data
     },
     pointNW: function(){
@@ -36,7 +44,7 @@ function(app,Renderer) {
     },
 
     shuffle: function(intruder){
-      console.log("check " +this.get("legend")+ " against " +intruder.get("legend"))
+      //console.log("check " +this.get("legend")+ " against " +intruder.get("legend"))
       // we positon left to right so check my top right with intruder bottom left
 
       intruderPoint = 
@@ -48,7 +56,7 @@ function(app,Renderer) {
       // console.log()
       // console.log(intruder.pointSE().x + " > " +  this.pointNW().x)
       if((intruder.pointSE().x > this.pointNW().x) && (this.pointSE().x >= intruder.pointNW().x)){
-        console.log("here")
+        // console.log("here")
         if(intruder.pointSE().y > this.pointNW().y){
           this.set('x',intruder.pointSE().x);
         }
@@ -116,11 +124,13 @@ function(app,Renderer) {
       this.el.setAttribute('width', 1280);
       this.el.setAttribute('height', 500); 
       this.ctx = this.el.getContext("2d");
-      this.ctx.scale(1,1)
+      this.ctx.scale(2,2)
       this.kb.each(this.addKey);
     },
     addKey: function(keyModel) {
-      Renderer.renderKey(this.ctx,keyModel)
+      //keys with no legend are spacers
+      Renderer.renderKey(this.ctx,keyModel);
+     
     },
 
 

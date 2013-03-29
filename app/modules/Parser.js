@@ -24,21 +24,7 @@ function(KBLayout) {
         }
       }
     })
-
-    console.log(flat);
-
-   
-
     return flat
-
-    // return [
-    //     new KBLayout.Model({x:5,y:5,legend:"q"}),
-    //     new KBLayout.Model({x:60,y:5,legend:"w"}),
-    //     new KBLayout.Model({x:115,y:5,height:105,legend:"e"}),
-    //     new KBLayout.Model({x:170,y:5,legend:"r"}),
-    //     new KBLayout.Model({x:5,y:60,legend:"a"}),
-    //     new KBLayout.Model({x:60,y:60,legend:"s"}),
-    //   ]
   }
   var _filterFailed = function(arr){  
     return _.filter(arr,function(m){
@@ -51,7 +37,7 @@ function(KBLayout) {
   }
 
   var _parseRow = function(source){
-    return _.map(source.split("$$"), function(s,row){
+    return _.map(source.split("\n\n"), function(s,row){
               return _parseKeys(s,row);
             });
   }
@@ -62,16 +48,23 @@ function(KBLayout) {
   }
   var _parseKey = function(source,row){
     var data = source.split("::");
+    console.log(data)
     //simply drop invalid entries
-    if(data.length == 2){
+    if(data.length >= 2){
       var create = {}
-      create.legend = data[0];
-      var hasHeight = data[1].split(",");
+      //1.25::Meta
+      create.sublegend = data[3];
+      create.legend = data[1];
+      var hasHeight = data[0].split(",");
       if(hasHeight.length == 2){
         create.unitWidth = hasHeight[0]
         create.unitHeight = hasHeight[1]
+      }else if(hasHeight.length == 3){
+        create.unitWidth = hasHeight[0]
+        create.isoStep = hasHeight[1]
+        create.unitHeight = hasHeight[2]
       }else{
-        create.unitWidth = data[1]
+        create.unitWidth = data[0]
         create.unitHeight = 1
       }
       create.row = row
