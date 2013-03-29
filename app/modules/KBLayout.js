@@ -25,7 +25,7 @@ function(app,Renderer) {
     parse: function(data){
       data.width = Math.round(data.unitWidth * this.UNITSCALE);
       data.height = Math.round(data.unitHeight * this.UNITSCALE);
-      data.y = (data.row*this.UNITSCALE)+data.row
+      data.y = (data.row*this.UNITSCALE)
       return data
     },
     pointNW: function(){
