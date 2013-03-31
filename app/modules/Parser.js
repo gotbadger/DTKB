@@ -14,17 +14,24 @@ function(KBLayout) {
 
     //parse then flatten and remove any errors
     var flat = _filterFailed(_.flatten(_parseRow(source)))
-    
+
+    //outcome is based on side effects....
+    _runPass(flat)
+
+    return flat
+  }
+  var _runPass = function(flat){
+    //terible algorithm...
     _.each(flat,function(elm,index,all){
       //work out how to space things out in here
-      //terible algorithm...
       if(index != 0){
         for (var i=0;i<index;i++){
-          elm.shuffle(_.toArray(all)[i]);
+          if(elm.shuffle(_.toArray(all)[i])){
+            return _runPass(flat)
+          }
         }
       }
-    })
-    return flat
+    }) 
   }
   var _filterFailed = function(arr){  
     return _.filter(arr,function(m){
@@ -48,7 +55,7 @@ function(KBLayout) {
   }
   var _parseKey = function(source,row){
     var data = source.split("::");
-    console.log(data)
+    //console.log(data)
     //simply drop invalid entries
     if(data.length >= 2){
       var create = {}

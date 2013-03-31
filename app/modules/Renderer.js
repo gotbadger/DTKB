@@ -121,15 +121,12 @@ function() {
           return;
       }
   };
-  //
-  Renderer.renderLshapeKey = function(context,keyModel){
-    console.log("h");
-  }
   Renderer.renderKey = function(context,keyModel){
+    //probably would be better if all keys knew how to render themselves rather than have to use this...
     if(keyModel.get('legend') == ""){
       return;
     }
-    var isLshape = keyModel.get('widthBottom') != undefined;
+    var isLshape = keyModel.get('isLshape');
     //decorate context with helpers
     ctx = _.extend(context,CTXHelpers)
     ctx.beginPath();

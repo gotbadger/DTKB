@@ -21,7 +21,8 @@ function(app,Renderer) {
         sublegend: "",
         font:"Tahoma",
         legend_size:12,
-        widthBottom: undefined
+        widthBottom: undefined,
+        isLshape: false,
       };
     },
     parse: function(data){
@@ -29,6 +30,7 @@ function(app,Renderer) {
       data.height = Math.round(data.unitHeight * this.UNITSCALE);
       if(data.isoStep){
         data.widthBottom = Math.round(data.isoStep * this.UNITSCALE);
+        data.isLshape = true
       }
       data.y = (data.row*this.UNITSCALE)
       if(data.sublegend == undefined){
@@ -43,25 +45,40 @@ function(app,Renderer) {
       return {x:this.get('x')+this.get('width'),y:this.get('y')+this.get('height')}
     },
 
+    //     moveX: function(newX){
+    //   //only move x if its MORE than the current value
+    //   if(newX > this.get('x')){
+    //     this.set('x',newX);
+    //   }
+    // },
+     
     shuffle: function(intruder){
-      //console.log("check " +this.get("legend")+ " against " +intruder.get("legend"))
-      // we positon left to right so check my top right with intruder bottom left
+      //special case lshapes - this is kinda anoying and would be better if we had split all lshape logic into its own class
+      //if(false){
+      if(intruder.get('isLshape') && (this.get('y')) != intruder.get('y')){
+        //console.log("lcomp "+this.get('legend'))
+        //when comparing if lshapes are on the same row the normal comparison is fine otherwise we need to do the special case
+        //calc the xbound for the lower part of the shape
+        var lowerXBound = intruder.get('x')+(intruder.get('width')-intruder.get('widthBottom'))
+        //console.log(lowerXBound)
+        if((intruder.pointSE().x > this.pointNW().x) && (this.pointSE().x > lowerXBound)){
+          //console.log("xbound "+this.get('legend'))
+          if(intruder.pointSE().y > this.pointNW().y){
+            return this.set('x',intruder.pointSE().x);
+          }
+        }      
 
-      intruderPoint = 
-      myPointTL = {x:this.get('x'),y:this.get('y')}
-      myPointTR = {x:this.get('x')+this.get("width"),y:this.get('y')}
-
-      // console.log(myPoint)
-      // console.log(intruderPoint)
-      // console.log()
-      // console.log(intruder.pointSE().x + " > " +  this.pointNW().x)
-      if((intruder.pointSE().x > this.pointNW().x) && (this.pointSE().x >= intruder.pointNW().x)){
-        // console.log("here")
-        if(intruder.pointSE().y > this.pointNW().y){
-          this.set('x',intruder.pointSE().x);
+      }else{
+        //normal keys
+        if((intruder.pointSE().x > this.pointNW().x) && (this.pointSE().x > intruder.pointNW().x)){
+          //console.log("X CHECK "+this.get('legend') + " vs. " + intruder.get('legend'))  
+          if(intruder.pointSE().y > this.pointNW().y){
+            //console.log("Y CHECK "+this.get('legend') + " vs. " + intruder.get('legend'))  
+            return this.set('x',intruder.pointSE().x); 
+          }
         }
       }
-
+      return false
     },
 
   });
@@ -124,7 +141,7 @@ function(app,Renderer) {
       this.el.setAttribute('width', 1280);
       this.el.setAttribute('height', 500); 
       this.ctx = this.el.getContext("2d");
-      this.ctx.scale(2,2)
+      this.ctx.scale(0.8,0.8)
       this.kb.each(this.addKey);
     },
     addKey: function(keyModel) {
